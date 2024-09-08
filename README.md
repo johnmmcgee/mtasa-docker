@@ -1,17 +1,17 @@
-# MTA:SA Server Docker image
+# MTA:SA Server Container image
 
-Unofficial Docker image for Multi Theft Auto: San Andreas game server. Maintained mostly for myself, but also for anyone from the MTA community who find it useful.
+Unofficial Container image for Multi Theft Auto: San Andreas game server. Maintained mostly for myself, but also for anyone from the MTA community who find it useful.
 
 ![image](https://user-images.githubusercontent.com/4274691/95139095-fd730200-076b-11eb-8310-e2e009856fd4.png)
 
 ## Details
 
-- This image is automatically built and published on Dockerhub as [`notfound/mtasa-server`](https://hub.docker.com/r/notfound/mtasa-server)
+- This image is automatically built and published on podmanhub as [`notfound/mtasa-server`](https://hub.podman.com/r/notfound/mtasa-server)
 - The base image is Debian Testing (slim) which ensures maximum compatibility and official support 
 - Total image size is oscillating around 100MiB
 - **64-bit server only**
-- On Windows, only the [**Docker Desktop with WSL 2 backend**](https://docs.docker.com/docker-for-windows/wsl/) is supported, so expect weird issues with different setup (been there, done that, big NOPE from me). On Linux there are no problems at all.
-- The tags always reflect the specific version and build number of the MTA server which they contain, i.e. `1.5.9-21437-v1`
+- On Windows, only the [**podman Desktop with WSL 2 backend**](https://docs.podman.com/podman-for-windows/wsl/) is supported, so expect weird issues with different setup (been there, done that, big NOPE from me). On Linux there are no problems at all.
+- The tags always reflect the specific version and build number of the MTA server which they contain, i.e. `latest`
 
 
 > **Note:** the `v4` in this example is the version number of the tag itself because sometimes something might go wrong and an updated release of the same version and build number is needed)
@@ -32,7 +32,7 @@ Unofficial Docker image for Multi Theft Auto: San Andreas game server. Maintaine
   - Effortless switching between different server configs, i.e. `mtaserver.dev.conf` file for development and `mtaserver.prod.conf` for the live server
   - All of that is configurable via [environment variables](#environment-variables)
   - Custom native modules can still be installed easily if needed (native modules will be deprecated in MTA 1.6, so they will be around for a while)
-  - Full access to the server console input and output, even if the server was started in the background (re-attaching to the console works fine, no `screen` or anything like that is involved - it's all docker)
+  - Full access to the server console input and output, even if the server was started in the background (re-attaching to the console works fine, no `screen` or anything like that is involved - it's all podman)
   - Simple directory structure on the root level (`/`) inside the image which makes them easier to find and mount
   - Ready for fastdl setups (hosting client files over external HTTP servers)
   - Fully prepared for running as a non-root user
@@ -65,13 +65,13 @@ Because everyone likes screenshots
 
 ## Usage
 
-It's recommended to use this image in a Docker Compose setup, because it's much easier to maintain and configure everything with a YAML file instead of passing all of the options via command line.
+It's recommended to use this image in a podman Compose setup, because it's much easier to maintain and configure everything with a YAML file instead of passing all of the options via command line.
 
 TODO: More on that will be here soon
 
 ## Usage via command line
 
-This is just for reference and basic testing. You should really consider [using a Docker Compose setup as described in this section](#usage).
+This is just for reference and basic testing. You should really consider [using a podman Compose setup as described in this section](#usage).
 
 ### Required manual setup
 
@@ -80,7 +80,7 @@ Create an empty directory somewhere on your disk, then navigate to it and create
 - `data/` 
 - `resource-cache/` 
 
-The commands in the examples below are [bind-mounting](https://docs.docker.com/storage/bind-mounts/) these directories to the container and they must exist or you will get a nasty error.
+The commands in the examples below are [bind-mounting](https://docs.podman.com/storage/bind-mounts/) these directories to the container and they must exist or you will get a nasty error.
 
 ### See it in action
 
@@ -94,7 +94,7 @@ Server config, acl config, banlist and so on will be available in `data/` in you
 
 ### Important notes
 
-This image is prepared for running as non-root user. Use Docker's `--user` option (or equivalent) to pass the uid / gid (of the non-root user on your host-machine) to the container. Look at examples in the next section.
+This image is prepared for running as non-root user. Use podman's `--user` option (or equivalent) to pass the uid / gid (of the non-root user on your host-machine) to the container. Look at examples in the next section.
 
 
 ### The commands
@@ -102,121 +102,121 @@ This image is prepared for running as non-root user. Use Docker's `--user` optio
 From bash:
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -t \                                        # allocate tty (always required)
 -p 22003:22003/udp \                        # map ports to host machine
 -p 22126:22126/udp \
 -p 22005:22005 \
 -v $(pwd)/mta-resources:/resources \        # mount mta resources dir
 -v $(pwd)/data:/data \                      # mount mta data dir (config, acl, banlist, internal DBs etc.)
-notfound/mtasa-server:1.5.9-21437-v1       # remember to adjust the tag name
+notfound/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 From powershell (basically the only difference is `pwd` syntax):
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -t \                                        # allocate tty (always required)
 -p 22003:22003/udp \                        # map ports to host machine
 -p 22126:22126/udp \
 -p 22005:22005 \
 -v ${PWD}/mta-resources:/resources \        # mount mta resources dir
 -v ${PWD}/data:/data \                      # mount mta data dir (config, acl, banlist, internal DBs etc.)
-notfound/mtasa-server:1.5.9-21437-v1       # remember to adjust the tag name
+notfound/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ## More examples
 
-Only relevant `docker run` options are being shown in each example to avoid redundancy. You can combine options from multiple examples to create the setup that suits your needs.
+Only relevant `podman run` options are being shown in each example to avoid redundancy. You can combine options from multiple examples to create the setup that suits your needs.
 
 ### Local development
 
 #### Minimal setup
 
 ```
-docker run --name mta-server \
+podman run --name mta-server \
 -t \
 -p 22003:22003/udp \
 -p 22005:22005 \
 -v $(pwd)/mta-resources:/resources \
-notfound/mtasa-server:1.5.9-21437-v1 
+notfound/mtasa-server:latest 
 ```
 
 #### Or with access to /data (mtaserver.conf, acl.xml etc.)
 
 ```
-docker run --name mta-server \
+podman run --name mta-server \
 -t \
 -p 22003:22003/udp \
 -p 22005:22005 \
 -v $(pwd)/mta-resources:/resources \
 -v $(pwd)/data:/data \
-notfound/mtasa-server:1.5.9-21437-v1 
+notfound/mtasa-server:1.6.0-22511-v1
 ```
 
 ### Running as non-root user:
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -u $(id -u):$(id -g)                        # set uid and gid of current user
 -t \                                        # allocate tty (always required)
-notfound/mtasa-server:1.5.9-21437-v1       # remember to adjust the tag name
+notfound/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ### Running in the background (daemonized):
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -d                                          # detach
 -t \                                        # allocate tty (always required)
-notfound/mtasa-server:1.5.9-21437-v1       # remember to adjust the tag name
+notfound/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ### Expose resource-cache to setup external fastdl server
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -t \                                        # allocate tty (always required)
 -v $(pwd)/resource-cache:/resource-cache \  # mount cache dir, you only need it if you have fastdl server setup
-notfound/mtasa-server:1.5.9-21437-v1       # remember to adjust the tag name
+notfound/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ### Enforce server password on startup
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -e MTA_SERVER_PASSWORD=mypassword
 -e MTA_SERVER_PASSWORD_REPLACE_POLICY=always  # always update the <password> entry in the active server config with the value of MTA_SERVER_PASSWORD
 -t \                                          # allocate tty (always required)
-notfound/mtasa-server:1.5.9-21437-v1         # remember to adjust the tag name
+notfound/mtasa-server:latest         # remember to adjust the tag name
 ```
 
 ### Set server password on startup, but only if it's not already set in the config
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -e MTA_SERVER_PASSWORD=mypassword
 -e MTA_SERVER_PASSWORD_REPLACE_POLICY=when-empty  # only update the <password> entry in the active server config if it's not already set
 -t \                                              # allocate tty (always required)
-notfound/mtasa-server:1.5.9-21437-v1             # remember to adjust the tag name
+notfound/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 `when-empty` is the default policy, so this can be simplified to just:
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -e MTA_SERVER_PASSWORD=mypassword
 -t \                                              # allocate tty (always required)
-notfound/mtasa-server:1.5.9-21437-v1             # remember to adjust the tag name
+notfound/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 ### Automatically clear server password on startup if it's set in the config
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -e MTA_SERVER_PASSWORD_REPLACE_POLICY=unless-empty  # only update the <password> entry in the active server config if it has some value
 -t \                                              # allocate tty (always required)
-notfound/mtasa-server:1.5.9-21437-v1             # remember to adjust the tag name
+notfound/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 ### Use custom config file
@@ -226,30 +226,14 @@ The config file (in this example it is `mtaserver.mycustom.conf`) must be availa
 If your custom config file is not present in the data directory, it will be automatically created on container startup and populated with the default configuration from baseconfig.
 
 ```
-docker run --name mta-server \ 
+podman run --name mta-server \ 
 -e MTA_SERVER_CONFIG_FILE_NAME=mtaserver.mycustom.conf
 -t \                                              # allocate tty (always required)
 -v ${PWD}/data:/data \                            # mount mta data dir (config, acl, banlist, internal DBs etc.)
-notfound/mtasa-server:1.5.9-21437-v1             # remember to adjust the tag name
+notfound/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 
 ## Building
 
-This image is built automatically and published on Docker Hub when I push tag to this repo.
-
-To build the image manually I use this exact command:
-
-From bash:
-
-```
-env MTA_SERVER_VERSION=1.5.9 MTA_SERVER_BUILD_NUMBER=21437 IMAGE_VERSION=1 \
-docker build --build-arg MTA_SERVER_VERSION=${MTA_SERVER_VERSION} --build-arg MTA_SERVER_BUILD_NUMBER=${MTA_SERVER_BUILD_NUMBER} -t mtasa-server:${MTA_SERVER_VERSION}-${MTA_SERVER_BUILD_NUMBER}-v${IMAGE_VERSION} .
-```
-
-From powershell:
-
-```
-$env:MTA_SERVER_VERSION="1.5.9"; $env:MTA_SERVER_BUILD_NUMBER="21437"; $env:IMAGE_VERSION="1";
-docker build --build-arg MTA_SERVER_VERSION=$env:MTA_SERVER_VERSION --build-arg MTA_SERVER_BUILD_NUMBER=$env:MTA_SERVER_BUILD_NUMBER -t mtasa-server:$env:MTA_SERVER_VERSION-$env:MTA_SERVER_BUILD_NUMBER-v$env:IMAGE_VERSION .
-```
+This image is built by issuing a Run Workflow and updating the values under actions.  There is no real need for automated builds at this time.

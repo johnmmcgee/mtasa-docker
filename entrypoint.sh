@@ -2,7 +2,7 @@
 
 set -e
 
-if ! [ -z "${MTA_DOCKER_ENTRYPOINT_DEBUG}" ]; then
+if ! [ -z "${MTA_ENTRYPOINT_DEBUG}" ]; then
     set -x
 fi;
 

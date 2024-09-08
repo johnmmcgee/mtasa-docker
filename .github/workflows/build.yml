@@ -11,10 +11,6 @@ on:
         description: 'MTA Server Build Number'
         required: true
         default: '22511'
-      IMAGE_VERSION:
-        description: 'Image Version'
-        required: true
-        default: '1'
 
 jobs:
   build:
@@ -34,13 +30,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build image with build number tag
         run: |
           docker build \
             --build-arg MTA_SERVER_VERSION=${{ github.event.inputs.MTA_SERVER_VERSION }} \
             --build-arg MTA_SERVER_BUILD_NUMBER=${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }} \
-            -t ghcr.io/${{ github.repository_owner }}/mtasa-server:${{ github.event.inputs.MTA_SERVER_VERSION }}-${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }}-v${{ github.event.inputs.IMAGE_VERSION }} .
+            -t ghcr.io/${{ github.repository_owner }}/mtasa-server:${{ github.event.inputs.MTA_SERVER_VERSION }}-${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }} \
+            -t ghcr.io/${{ github.repository_owner }}/mtasa-server:latest \
+            .
 
-      - name: Push Docker image
+      - name: Push image latest tag
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/mtasa-server:${{ github.event.inputs.MTA_SERVER_VERSION }}-${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }}-v${{ github.event.inputs.IMAGE_VERSION }}
+          docker push ghcr.io/${{ github.repository_owner }}/mtasa-server:${{ github.event.inputs.MTA_SERVER_VERSION }}-${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }}
+          docker push ghcr.io/${{ github.repository_owner }}/mtasa-server:latest
