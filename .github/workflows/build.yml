@@ -1,51 +1,46 @@
-name: Build new tag
+name: Build and Push Docker Image
 
 on:
-  push:
-    tags:
-      - '[1-9]+.[0-9]+.[0-9]+-[0-9]+-v*'
   workflow_dispatch:
+    inputs:
+      MTA_SERVER_VERSION:
+        description: 'MTA Server Version'
+        required: true
+        default: '1.6.0'
+      MTA_SERVER_BUILD_NUMBER:
+        description: 'MTA Server Build Number'
+        required: true
+        default: '22511'
+      IMAGE_VERSION:
+        description: 'Image Version'
+        required: true
+        default: '1'
 
 jobs:
   build:
-    if: github.event.base_ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get current version
-        id: current_version
-        run: |
-          echo ::set-output name=MTA_SERVER_VERSION::$(echo $GITHUB_REF | cut -d / -f 3 | cut -d '-' -f 1)
-          echo ::set-output name=MTA_SERVER_BUILD_NUMBER::$(echo $GITHUB_REF | cut -d / -f 3 | cut -d '-' -f 2)
-          echo ::set-output name=IMAGE_VERSION::$(echo $GITHUB_REF | cut -d / -f 3 | cut -d '-' -f 3 | cut -d v -f 2)
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-      - name: Login to GitHub Container Registry
+
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          platforms: linux/amd64
-          push: true
-          build-args: |
-            MTA_SERVER_VERSION=${{ steps.current_version.outputs.MTA_SERVER_VERSION }}
-            MTA_SERVER_BUILD_NUMBER=${{ steps.current_version.outputs.MTA_SERVER_BUILD_NUMBER }}
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/mtasa-server:latest
-            ghcr.io/${{ github.repository_owner }}/mtasa-server:${{ steps.current_version.outputs.MTA_SERVER_VERSION }}-${{ steps.current_version.outputs.MTA_SERVER_BUILD_NUMBER }}-v${{ steps.current_version.outputs.IMAGE_VERSION }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg MTA_SERVER_VERSION=${{ github.event.inputs.MTA_SERVER_VERSION }} \
+            --build-arg MTA_SERVER_BUILD_NUMBER=${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }} \
+            -t ghcr.io/${{ github.repository_owner }}/mtasa-server:${{ github.event.inputs.MTA_SERVER_VERSION }}-${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }}-v${{ github.event.inputs.IMAGE_VERSION }} .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/mtasa-server:${{ github.event.inputs.MTA_SERVER_VERSION }}-${{ github.event.inputs.MTA_SERVER_BUILD_NUMBER }}-v${{ github.event.inputs.IMAGE_VERSION }}
