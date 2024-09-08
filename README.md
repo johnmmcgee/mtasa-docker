@@ -109,7 +109,7 @@ podman run --name mta-server \
 -p 22005:22005 \
 -v $(pwd)/mta-resources:/resources \        # mount mta resources dir
 -v $(pwd)/data:/data \                      # mount mta data dir (config, acl, banlist, internal DBs etc.)
-notfound/mtasa-server:latest       # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 From powershell (basically the only difference is `pwd` syntax):
@@ -122,7 +122,7 @@ podman run --name mta-server \
 -p 22005:22005 \
 -v ${PWD}/mta-resources:/resources \        # mount mta resources dir
 -v ${PWD}/data:/data \                      # mount mta data dir (config, acl, banlist, internal DBs etc.)
-notfound/mtasa-server:latest       # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ## More examples
@@ -139,7 +139,7 @@ podman run --name mta-server \
 -p 22003:22003/udp \
 -p 22005:22005 \
 -v $(pwd)/mta-resources:/resources \
-notfound/mtasa-server:latest 
+ghcr.io/johnmmcgee/mtasa-server:latest 
 ```
 
 #### Or with access to /data (mtaserver.conf, acl.xml etc.)
@@ -160,7 +160,7 @@ notfound/mtasa-server:1.6.0-22511-v1
 podman run --name mta-server \ 
 -u $(id -u):$(id -g)                        # set uid and gid of current user
 -t \                                        # allocate tty (always required)
-notfound/mtasa-server:latest       # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ### Running in the background (daemonized):
@@ -169,7 +169,7 @@ notfound/mtasa-server:latest       # remember to adjust the tag name
 podman run --name mta-server \ 
 -d                                          # detach
 -t \                                        # allocate tty (always required)
-notfound/mtasa-server:latest       # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ### Expose resource-cache to setup external fastdl server
@@ -178,7 +178,7 @@ notfound/mtasa-server:latest       # remember to adjust the tag name
 podman run --name mta-server \ 
 -t \                                        # allocate tty (always required)
 -v $(pwd)/resource-cache:/resource-cache \  # mount cache dir, you only need it if you have fastdl server setup
-notfound/mtasa-server:latest       # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest       # remember to adjust the tag name
 ```
 
 ### Enforce server password on startup
@@ -188,7 +188,7 @@ podman run --name mta-server \
 -e MTA_SERVER_PASSWORD=mypassword
 -e MTA_SERVER_PASSWORD_REPLACE_POLICY=always  # always update the <password> entry in the active server config with the value of MTA_SERVER_PASSWORD
 -t \                                          # allocate tty (always required)
-notfound/mtasa-server:latest         # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest         # remember to adjust the tag name
 ```
 
 ### Set server password on startup, but only if it's not already set in the config
@@ -198,7 +198,7 @@ podman run --name mta-server \
 -e MTA_SERVER_PASSWORD=mypassword
 -e MTA_SERVER_PASSWORD_REPLACE_POLICY=when-empty  # only update the <password> entry in the active server config if it's not already set
 -t \                                              # allocate tty (always required)
-notfound/mtasa-server:latest             # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 `when-empty` is the default policy, so this can be simplified to just:
@@ -207,7 +207,7 @@ notfound/mtasa-server:latest             # remember to adjust the tag name
 podman run --name mta-server \ 
 -e MTA_SERVER_PASSWORD=mypassword
 -t \                                              # allocate tty (always required)
-notfound/mtasa-server:latest             # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 ### Automatically clear server password on startup if it's set in the config
@@ -216,7 +216,7 @@ notfound/mtasa-server:latest             # remember to adjust the tag name
 podman run --name mta-server \ 
 -e MTA_SERVER_PASSWORD_REPLACE_POLICY=unless-empty  # only update the <password> entry in the active server config if it has some value
 -t \                                              # allocate tty (always required)
-notfound/mtasa-server:latest             # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 ### Use custom config file
@@ -230,7 +230,7 @@ podman run --name mta-server \
 -e MTA_SERVER_CONFIG_FILE_NAME=mtaserver.mycustom.conf
 -t \                                              # allocate tty (always required)
 -v ${PWD}/data:/data \                            # mount mta data dir (config, acl, banlist, internal DBs etc.)
-notfound/mtasa-server:latest             # remember to adjust the tag name
+ghcr.io/johnmmcgee/mtasa-server:latest             # remember to adjust the tag name
 ```
 
 
